@@ -1,0 +1,7 @@
+// kernel module tmp files
+*.tmp_versions
+*.cmd
+*.mod.*
+*.o
+*.symvers
+*.order
