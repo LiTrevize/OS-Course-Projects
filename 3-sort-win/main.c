@@ -34,10 +34,11 @@ DWORD WINAPI Merge(PVOID Param) {
     DWORD *a = malloc(sizeof(DWORD) * im);
     DWORD *b = malloc(sizeof(DWORD) * jm);
     for (i = 0; i < im; ++i)
-        a[i] = Nums[i];
+        a[i] = Nums[P.Start + i];
     for (j = 0; j < jm; ++j)
-        b[j] = Nums[i + j];
-    i = j = k = 0;
+        b[j] = Nums[P.Start + i + j];
+    i = j = 0;
+    k = P.Start;
     while (i < im && j < jm) {
         if (a[i] < b[j]) {
             Nums[k] = a[i];
