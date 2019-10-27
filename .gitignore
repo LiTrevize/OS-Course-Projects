@@ -5,3 +5,8 @@
 *.o
 *.symvers
 *.order
+
+// java intellij idea
+*.idea/
+*out/
+*.iml
