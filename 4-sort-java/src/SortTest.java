@@ -30,11 +30,11 @@ public class SortTest {
         System.out.println();
 
         // use fork-join parallelism to quick sort
-//        QuickSortTask task2 = new QuickSortTask(arr2, 0, n - 1);
-//        System.out.println("Quick-Sort:");
-//        pool.invoke(task2);
-//        for (int i = 0; i < n; i++)
-//            System.out.print(arr2[i] + " ");
-//        System.out.println();
+        QuickSortTask task2 = new QuickSortTask(arr2, 0, n - 1);
+        System.out.println("Quick-Sort:");
+        pool.invoke(task2);
+        for (int i = 0; i < n; i++)
+            System.out.print(arr2[i] + " ");
+        System.out.println();
     }
 }

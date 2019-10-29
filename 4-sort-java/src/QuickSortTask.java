@@ -22,10 +22,11 @@ public class QuickSortTask extends RecursiveAction {
             return;
         }
         if (beg == end) return;
+        if (beg > end) return;
         int left = beg, right = end, mid = (beg + end) / 2, pivot;
         // choose first one as pivot
         pivot = arr[beg];
-        //
+        // select and rearrange
         while (left < right) {
             while (left < right && arr[right] > pivot)
                 right--;
