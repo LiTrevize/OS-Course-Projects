@@ -1,6 +1,6 @@
 import java.util.concurrent.ForkJoinPool;
 
-public class SortTest {
+public class SortTestDriver {
     public static void main(String[] args) {
 
         ForkJoinPool pool = new ForkJoinPool();
