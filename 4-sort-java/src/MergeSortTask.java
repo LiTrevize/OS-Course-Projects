@@ -1,30 +1,29 @@
 import java.util.concurrent.*;
+import java.util.Arrays;
 
-public class MergeSortTask extends RecursiveAction {
+public class MergeSortTask<T extends Comparable<T>> extends RecursiveAction {
     private int beg;
     private int end;
-    public int[] arr;
+    private T[] arr;
 
-    public MergeSortTask(int[] arr, int beg, int end) {
+    public MergeSortTask(T[] arr, int beg, int end) {
+        this.arr = arr;
         this.beg = beg;
         this.end = end;
-        this.arr = arr;
     }
 
     public void merge(int beg, int mid, int end) {
         int i, j, k;
         int im = mid - beg;
         int jm = end - mid + 1;
-        int[] a = new int[im];
-        int[] b = new int[jm];
-        for (i = 0; i < im; ++i)
-            a[i] = arr[beg + i];
-        for (j = 0; j < jm; ++j)
-            b[j] = arr[beg + i + j];
+        // new T[] will cause an error!
+        // T[] a = new T[mid-beg]
+        T[] a = Arrays.copyOfRange(arr, beg, mid);
+        T[] b = Arrays.copyOfRange(arr, mid, end+1);
         i = j = 0;
         k = beg;
         while (i < im && j < jm) {
-            if (a[i] <= b[j]) {
+            if (a[i].compareTo(b[j]) <= 0) {
                 arr[k] = a[i];
                 i++;
             } else {
@@ -46,16 +45,16 @@ public class MergeSortTask extends RecursiveAction {
     @Override
     protected void compute() {
         if (beg == end - 1) {
-            if (arr[beg] > arr[end]) {
-                int tmp = arr[beg];
+            if (arr[beg].compareTo(arr[end]) > 0) {
+                T tmp = arr[beg];
                 arr[beg] = arr[end];
                 arr[end] = tmp;
             }
             return;
         }
         if (beg == end) return;
-        MergeSortTask leftTask = new MergeSortTask(arr, beg, (beg + end) / 2);
-        MergeSortTask rightTask = new MergeSortTask(arr, (beg + end) / 2 + 1, end);
+        MergeSortTask leftTask = new MergeSortTask<T>(arr, beg, (beg + end) / 2);
+        MergeSortTask rightTask = new MergeSortTask<T>(arr, (beg + end) / 2 + 1, end);
 
         leftTask.fork();
         rightTask.fork();

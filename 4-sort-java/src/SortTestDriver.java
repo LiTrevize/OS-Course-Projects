@@ -4,15 +4,16 @@ public class SortTestDriver {
     public static void main(String[] args) {
 
         ForkJoinPool pool = new ForkJoinPool();
-        int n = 10;
-        int[] arr = new int[n];
-        int[] arr2 = new int[n];
-        // create SIZE random integers between 0 and 9
+        int n = 16;
+        Integer[] arr = new Integer[n];
+        String[] arr2 = new String[n];
+
         java.util.Random rand = new java.util.Random();
+        String str = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 
         for (int i = 0; i < n; i++) {
             arr[i] = rand.nextInt(2 * n);
-            arr2[i] = arr[i];
+            arr2[i] = "" + str.charAt(rand.nextInt(62));
         }
 
         System.out.println("Raw array:");
@@ -27,6 +28,11 @@ public class SortTestDriver {
 
         for (int i = 0; i < n; i++)
             System.out.print(arr[i] + " ");
+        System.out.println();
+
+        System.out.println("Raw array:");
+        for (int i = 0; i < n; i++)
+            System.out.print(arr2[i] + " ");
         System.out.println();
 
         // use fork-join parallelism to quick sort

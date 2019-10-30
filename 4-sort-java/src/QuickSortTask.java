@@ -1,11 +1,12 @@
 import java.util.concurrent.*;
+import java.util.Arrays;
 
-public class QuickSortTask extends RecursiveAction {
+public class QuickSortTask<T extends Comparable<T>> extends RecursiveAction {
     private int beg;
     private int end;
-    public int[] arr;
+    private T[] arr;
 
-    public QuickSortTask(int[] arr, int beg, int end) {
+    public QuickSortTask(T[] arr, int beg, int end) {
         this.arr = arr;
         this.beg = beg;
         this.end = end;
@@ -14,8 +15,8 @@ public class QuickSortTask extends RecursiveAction {
     @Override
     protected void compute() {
         if (beg == end - 1) {
-            if (arr[beg] > arr[end]) {
-                int tmp = arr[beg];
+            if (arr[beg].compareTo(arr[end]) > 0) {
+                T tmp = arr[beg];
                 arr[beg] = arr[end];
                 arr[end] = tmp;
             }
@@ -23,18 +24,19 @@ public class QuickSortTask extends RecursiveAction {
         }
         if (beg == end) return;
         if (beg > end) return;
-        int left = beg, right = end, mid = (beg + end) / 2, pivot;
+        int left = beg, right = end, mid = (beg + end) / 2;
+        T pivot;
         // choose first one as pivot
         pivot = arr[beg];
         // select and rearrange
         while (left < right) {
-            while (left < right && arr[right] > pivot)
+            while (left < right && arr[right].compareTo(pivot) > 0)
                 right--;
             if (left < right) {
                 arr[left] = arr[right];
                 left++;
             }
-            while (left < right && arr[left] < pivot)
+            while (left < right && arr[left].compareTo(pivot) < 0)
                 left++;
             if (left < right) {
                 arr[right] = arr[left];
