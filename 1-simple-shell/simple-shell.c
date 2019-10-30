@@ -52,7 +52,7 @@ int main(void) {
         fflush(stdout);
 
         // user input
-        if (fgets(buf, MAX_LINE, stdin) != NULL) { // need more error robust
+        if (fgets(buf, MAX_LINE, stdin) != NULL) {
             i = 0;
             argid = 0;
             curcid = 0;
