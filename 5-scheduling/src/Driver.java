@@ -39,24 +39,24 @@ public class Driver
 
         inFile.close();
         
-        Algorithm scheduler = null;
+        Scheduler scheduler = null;
         String choice = args[0].toUpperCase();
 
         switch(choice) {
             case "FCFS":
-                scheduler = new FCFS(queue);
+                scheduler = (Scheduler)new FCFS(queue);
                 break;
             case "SJF":
-                scheduler = new SJF(queue);
+                scheduler = (Scheduler)new SJF(queue);
                 break;
             case "PRI":
-                scheduler = new Priority(queue);
+                scheduler = (Scheduler)new Priority(queue);
                 break;
             case "RR":
-                scheduler = new RR(queue);
+                scheduler = (Scheduler)new RR(queue);
                 break;
             case "PRI-RR":
-                scheduler = new PriorityRR(queue);
+                scheduler = (Scheduler)new PriorityRR(queue);
                 break;
             default:
                 System.err.println("Invalid algorithm");
@@ -65,6 +65,8 @@ public class Driver
 
         // start the scheduler
         scheduler.schedule();
+
+        scheduler.showAvgTime();
 
     }
 }
