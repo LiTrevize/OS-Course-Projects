@@ -1,0 +1,7 @@
+#ifndef INC_7_PRODUCER_CONSUMER_BUFFER_H
+#define INC_7_PRODUCER_CONSUMER_BUFFER_H
+
+typedef int buffer_item;
+#define BUFFER_SIZE 5
+
+#endif //INC_7_PRODUCER_CONSUMER_BUFFER_H
