@@ -11,5 +11,8 @@
 *out/
 *.iml
 
+// cmake files
+*cmake-build-debug/
+
 Report/
 3-sort-win/
