@@ -14,6 +14,7 @@ import java.util.concurrent.locks.ReentrantLock;
 class Worker implements Runnable {
     private Queue<Runnable> waitQueue;
     private Lock lock;
+    private Runnable task = null;
 
     public Worker(Queue<Runnable> waitQueue, Lock lock) {
         this.waitQueue = waitQueue;
@@ -22,7 +23,6 @@ class Worker implements Runnable {
 
     @Override
     public void run() {
-        Runnable task = null;
         while (!Thread.currentThread().isInterrupted()) {
             lock.lock();
             if (!waitQueue.isEmpty())
@@ -85,7 +85,9 @@ public class ThreadPool {
      * Add work to the queue.
      */
     public void add(Runnable task) {
+        lock.lock();
         waitQueue.offer(task);
+        lock.unlock();
     }
 
 }
