@@ -91,7 +91,6 @@ public class Banker {
             if (release[i] >= allocation[customer_id][i]) {
                 available[i] += allocation[customer_id][i];
                 allocation[customer_id][i] = 0;
-//                need[customer_id][i] = 0;
             } else {
                 available[i] += release[i];
                 allocation[customer_id][i] -= release[i];
