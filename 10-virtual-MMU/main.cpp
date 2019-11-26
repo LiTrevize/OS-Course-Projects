@@ -3,29 +3,22 @@
 #include <random>
 #include <algorithm>
 #include "TLB.h"
+#include "PageTable.h"
 
 using namespace std;
 
 char phy_mem[1 << 16];
-bool frame_loaded[1 << 8];
+//bool frame_loaded[1 << 7];
+//unsigned char page_in_frame[1 << 7];
 TLB tlb;
+PageTable pgt;
 ifstream mem;
 int counts, tlb_hit, page_fault;
 
-void generate_page_table() {
-    char a[256];
-    for (int i = 0; i < 256; i++)
-        a[i] = i;
-    shuffle(a, a + 256, std::default_random_engine());
-    ofstream pt("page_table.bin", ios::out | ios::binary);
-    pt.write(a, 256);
-    pt.close();
-}
 
-void load_frame(int page_num, int frame_num) {
+void load_page(int page_num, int frame_num) {
     mem.seekg((page_num << 8) * sizeof(char));
     mem.read(phy_mem + (frame_num << 8), 1 << 8);
-    frame_loaded[frame_num] = true;
 }
 
 unsigned char page_table(unsigned char page_num) {
@@ -48,8 +41,13 @@ int translate(int log_addr, unsigned char &page_num, unsigned char &frame_num, u
         tlb_hit++;
     } else {
         // translate through page table
-        frame_num = page_table(page_num);
-        tlb.add(page_num, frame_num);
+        if (pgt.is_valid(page_num))
+            frame_num=pgt.get(page_num);
+        else {
+            frame_num=pgt.allocate(page_num);
+            load_page(page_num,frame_num);
+            tlb.add(page_num, frame_num);
+        }
     }
 
     return (frame_num << 8) + offset;
@@ -60,12 +58,6 @@ int load(int log_addr, int &phy_addr) {
     counts++;
     // translate
     phy_addr = translate(log_addr, pn, fn, offset);
-
-//    cout<<(int)pn<<endl;
-
-    // if frame not loaded
-    if (!frame_loaded[fn])
-        load_frame(pn, fn);
 
     return phy_mem[phy_addr];
 }
@@ -81,9 +73,6 @@ int main() {
     mem.open("BACKING_STORE.bin", ios::binary);
     char line[10];
 
-    // no frame is loaded initially
-    for (int i = 0; i < (1 << 8); i++)
-        frame_loaded[i] = false;
 
     while (!fin.eof()) {
         // get logical address
@@ -96,6 +85,7 @@ int main() {
 //        if (count++ == 30) break;
     }
     cout << "TLB hit: " << tlb_hit << endl;
+    cout << "Page-fault: " << page_fault << endl;
     fin.close();
     mem.close();
     return 0;
