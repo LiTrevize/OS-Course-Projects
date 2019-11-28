@@ -1,8 +1,6 @@
 #ifndef INC_10_VIRTUAL_MMU_TLB_H
 #define INC_10_VIRTUAL_MMU_TLB_H
 
-#include <queue>
-
 struct Entry {
     unsigned char pn, fn;
 
@@ -15,13 +13,19 @@ struct Entry {
 class TLB {
 private:
     Entry cache[16];
-    std::queue<int> q;
-    int curlen;
+    int curidx;
+    bool full;
 public:
-    TLB() { curlen = 0; }
+    TLB() {
+        curidx = 0;
+        full = false;
+    }
 
     bool contains(unsigned char pn, unsigned char &fn) {
-        for (int i = 0; i < curlen; i++)
+        int last;
+        if (full) last = 16;
+        else last = curidx;
+        for (int i = 0; i < last; i++)
             if (cache[i].pn == pn) {
                 fn = cache[i].fn;
                 return true;
@@ -29,18 +33,28 @@ public:
         return false;
     }
 
+    bool contains_fn(unsigned char fn) {
+        int last;
+        if (full) last = 16;
+        else last = curidx;
+        for (int i = 0; i < last; i++)
+            if (cache[i].fn == fn) {
+                return true;
+            }
+        return false;
+    }
+
     void add(unsigned char pn, unsigned char fn) {
-        if (curlen < 16) {
-            q.push(curlen);
-            cache[curlen++] = Entry(pn, fn);
+        if (!full) {
+            cache[curidx++] = Entry(pn, fn);
+            if (curidx == 16) full = true;
             return;
         }
 
         // need to replace through FIFO
-        int victim_id = q.front();
-        q.pop();
+        curidx = curidx % 16;
+        int victim_id = curidx++;
         cache[victim_id] = Entry(pn, fn);
-        q.push(victim_id);
     }
 };
 

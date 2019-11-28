@@ -8,10 +8,8 @@
 using namespace std;
 
 char phy_mem[1 << 16];
-//bool frame_loaded[1 << 7];
-//unsigned char page_in_frame[1 << 7];
 TLB tlb;
-PageTable pgt;
+PageTable pgt(1 << 7);
 ifstream mem;
 int counts, tlb_hit, page_fault;
 
@@ -21,15 +19,6 @@ void load_page(int page_num, int frame_num) {
     mem.read(phy_mem + (frame_num << 8), 1 << 8);
 }
 
-unsigned char page_table(unsigned char page_num) {
-    ifstream pt("page_table.bin", ios::binary);
-    pt.seekg(page_num * sizeof(char));
-    char frame_num;
-    pt.read(&frame_num, 1);
-    pt.close();
-    return frame_num;
-}
-
 int translate(int log_addr, unsigned char &page_num, unsigned char &frame_num, unsigned char &offset) {
     // parse logical address
     offset = log_addr & ((1 << 8) - 1);
@@ -37,17 +26,26 @@ int translate(int log_addr, unsigned char &page_num, unsigned char &frame_num, u
     page_num = log_addr & ((1 << 8) - 1);
 
     // translate through TLB
+    // ensure that TLB entries are valid
     if (tlb.contains(page_num, frame_num)) {
         tlb_hit++;
+//        cout<<(int)page_num<<' '<<(int)frame_num<<endl;
     } else {
         // translate through page table
+        // if page is valid
         if (pgt.is_valid(page_num))
-            frame_num=pgt.get(page_num);
+            frame_num = pgt.get_fn(page_num);
+            // if page not valid
         else {
-            frame_num=pgt.allocate(page_num);
-            load_page(page_num,frame_num);
-            tlb.add(page_num, frame_num);
+            // ensure victim page is not in tlb
+            pgt.check_tlb(tlb);
+            // page replacement
+            frame_num = pgt.allocate(page_num);
+            load_page(page_num, frame_num);
+            page_fault++;
         }
+//        cout << (int) page_num << ' ' << (int) frame_num << endl;
+        tlb.add(page_num, frame_num);
     }
 
     return (frame_num << 8) + offset;
@@ -63,8 +61,6 @@ int load(int log_addr, int &phy_addr) {
 }
 
 int main() {
-//    generate_page_table();
-//    return 0;
     int la, offset, pa, count = 0;
     unsigned char pn, fn;
     char byte;
